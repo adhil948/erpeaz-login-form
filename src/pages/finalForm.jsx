@@ -111,18 +111,22 @@ const FinalForm = () => {
 
     //demo check only
 
-    axios.post(`${import.meta.env.VITE_API_URL}/createnewsite/${id}`)
-  .then(() => {
-    // instead of real backend, just mock it
-    setTaskId("demo-task-123"); // must match your db.json task id
-    setMessage("⚡ Site building started...");
-    setCurrentStep(0);
+axios.post(`${import.meta.env.VITE_API_URL}/createnewsite/${id}`)
+  .then((res) => {
+    if (res.status === 200 && res.data.taskId) {
+      setTaskId(res.data.taskId);   // ✅ use backend’s taskId
+      setMessage("⚡ Site building started...");
+      setCurrentStep(0);
+    } else {
+      throw new Error("No taskId returned from backend");
+    }
   })
   .catch((err) => {
     setError(true);
-    setMessage("❌ Failed to start site creation.");
+    setMessage(err.message || "❌ Failed to start site creation.");
     setLoading(false);
   });
+
 
 
     // // Step 1: POST to start site creation
@@ -188,38 +192,39 @@ const FinalForm = () => {
   return (
     <div className="relative min-h-screen flex flex-col justify-center items-center bg-gray-50 p-4">
       {/* Loader */}
-      {loading && (
-        <div className="absolute inset-0 flex flex-col justify-center items-center bg-black bg-opacity-60 z-50 p-4">
-          {/* Progress bar */}
-          <div className="w-64 h-2 bg-gray-300 rounded-full overflow-hidden mb-6">
-            <div
-              className="h-2 bg-blue-500 transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
+{loading && (
+  <div className="absolute inset-0 flex flex-col justify-center items-center bg-white z-50 p-8">
+    {/* Wide Progress bar */}
+    <div className="w-96 h-4 bg-gray-300 rounded-full overflow-hidden mb-8">
+      <div
+        className="h-4 bg-blue-500 transition-all duration-500"
+        style={{ width: `${progress}%` }}
+      ></div>
+    </div>
 
-          {/* Steps */}
-          <div className="space-y-4 text-white text-left">
-            {stepsConfig.map((step, index) => (
-              <div key={step.id}>
-                <div className="flex items-center space-x-2">
-                  {index < currentStep ? (
-                    <CheckCircle className="text-green-400 w-5 h-5" />
-                  ) : index === currentStep ? (
-                    <Loader2 className="animate-spin text-blue-400 w-5 h-5" />
-                  ) : (
-                    <Circle className="text-gray-400 w-5 h-5" />
-                  )}
-                  <span>{step.label}</span>
-                </div>
-                {index === currentStep && currentSubtext && (
-                  <p className="ml-7 text-sm text-gray-300">{currentSubtext}</p>
-                )}
-              </div>
-            ))}
+    {/* Steps */}
+    <div className="space-y-6 w-full max-w-md text-left">
+      {stepsConfig.map((step, index) => (
+        <div key={step.id}>
+          <div className="flex items-center space-x-3">
+            {index < currentStep ? (
+              <CheckCircle className="text-green-500 w-6 h-6" />
+            ) : index === currentStep ? (
+              <Loader2 className="animate-spin text-blue-500 w-6 h-6" />
+            ) : (
+              <Circle className="text-gray-400 w-6 h-6" />
+            )}
+            <span className="text-lg font-medium text-gray-800">{step.label}</span>
           </div>
+          {index === currentStep && currentSubtext && (
+            <p className="ml-9 text-sm text-gray-500">{currentSubtext}</p>
+          )}
         </div>
-      )}
+      ))}
+    </div>
+  </div>
+)}
+
 
       {/* Error message */}
       {!loading && error && (
