@@ -82,6 +82,37 @@ const FinalForm = () => {
   const id = localStorage.getItem("componyId");
 
 
+  // Call this when backend status is "completed"
+const walkStepsToCompletion = () => {
+  let s = currentStep;
+  const interval = setInterval(() => {
+    if (s < stepsConfig.length - 1) {
+      s += 1;
+      setCurrentStep(s);
+
+      // Optionally, animate the progress bar
+      const stepPercent = Math.round(((s + 1) / stepsConfig.length) * 100);
+      setProgress(stepPercent);
+
+      // Set a random subtext for each step
+      const subs = stepsConfig[s]?.sub || [];
+      if (subs.length > 0) {
+        setCurrentSubtext(subs[Math.floor(Math.random() * subs.length)]);
+      } else {
+        setCurrentSubtext('');
+      }
+    } else {
+      clearInterval(interval);
+      setProgress(100);
+      setSuccess(true);
+      setMessage("✅ Site created successfully!");
+      setLoading(false);
+    }
+  }, 500); // 500ms per step (tweak as you like)
+};
+
+
+
   useEffect(() => {
   if (!loading) return;
 
@@ -185,16 +216,13 @@ useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_API_URL}/status/${taskId}`)
       .then((res) => {
-        if (res.data.status === "completed") {
-          // Fast-forward all remaining steps
-          setCurrentStep(stepsConfig.length - 1);
-          setProgress(100);
-          setSuccess(true);
-          setMessage("✅ Site created successfully!");
-          setSiteName(res.data.siteName);
-          setLoading(false);
-          clearInterval(poll);
-        } else if (res.data.status === "failed") {
+if (res.data.status === "completed") {
+  // Fast-forward all remaining steps -- instead, walk through steps for aesthetics
+  walkStepsToCompletion();
+  setSiteName(res.data.siteName);
+  clearInterval(poll);
+}
+ else if (res.data.status === "failed") {
           setError(true);
           setProgress(100);
           setMessage("❌ Site creation failed.");
@@ -210,7 +238,7 @@ useEffect(() => {
       .catch(() => {
         // Ignore network errors and continue polling
       });
-  }, 1000*40); // poll every 5s
+  }, 1000*50); // poll every 5s
 
   return () => clearInterval(poll);
 }, [taskId]);
