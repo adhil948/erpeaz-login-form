@@ -2,6 +2,15 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Loader2, CheckCircle, Circle } from "lucide-react"; // spinner + icons
 
+
+const topMessages = [
+  "⚠️ Please don’t refresh the page, this is a one-time process.",
+  "⏳ Site setup may take a few minutes.",
+  "🔒 Do not close the tab until the setup completes.",
+  "💡 Sit back and relax, your site is being prepared."
+];
+
+
 const stepsConfig = [
   {
     id: "site",
@@ -67,7 +76,23 @@ const FinalForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [currentSubtext, setCurrentSubtext] = useState("");
 
+  const [currentTopMessage, setCurrentTopMessage] = useState(topMessages[0]);
+
+
   const id = localStorage.getItem("componyId");
+
+
+  useEffect(() => {
+  if (!loading) return;
+
+  const interval = setInterval(() => {
+    const random = topMessages[Math.floor(Math.random() * topMessages.length)];
+    setCurrentTopMessage(random);
+  }, 8000); // every 8 seconds
+
+  return () => clearInterval(interval);
+}, [loading]);
+
 
   // ⏳ Progress bar simulation
   useEffect(() => {
@@ -153,47 +178,57 @@ axios.post(`${import.meta.env.VITE_API_URL}/createnewsite/${id}`)
   }, [id]);
 
   // 📡 Poll backend for final completion
-  useEffect(() => {
-    if (!taskId) return;
+useEffect(() => {
+  if (!taskId) return;
 
-    const poll = setInterval(() => {
-      axios
-        .get(`${import.meta.env.VITE_API_URL}/status/${taskId}`)
-        .then((res) => {
-          if (res.data.status === "completed") {
-            setSuccess(true);
-            setMessage("✅ Site created successfully!");
-            setSiteName(res.data.siteName);
-            setProgress(100);
-            setCurrentStep(stepsConfig.length - 1); // jump to final step
-            setLoading(false);
-            clearInterval(poll);
-          } else if (res.data.status === "failed") {
-            setError(true);
-            setMessage("❌ Site creation failed.");
-            setProgress(100);
-            setLoading(false);
-            clearInterval(poll);
-          } else {
-            // Otherwise, simulate step progression
-            setCurrentStep((prev) =>
-              prev < stepsConfig.length - 2 ? prev + 1 : prev
-            );
-          }
-        })
-        .catch(() => {
-          // Ignore network errors and keep polling
-        });
-    }, 45000); // move to next step every ~45s if no response
+  const poll = setInterval(() => {
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/status/${taskId}`)
+      .then((res) => {
+        if (res.data.status === "completed") {
+          // Fast-forward all remaining steps
+          setCurrentStep(stepsConfig.length - 1);
+          setProgress(100);
+          setSuccess(true);
+          setMessage("✅ Site created successfully!");
+          setSiteName(res.data.siteName);
+          setLoading(false);
+          clearInterval(poll);
+        } else if (res.data.status === "failed") {
+          setError(true);
+          setProgress(100);
+          setMessage("❌ Site creation failed.");
+          setLoading(false);
+          clearInterval(poll);
+        } else {
+          // Otherwise continue simulating steps
+          setCurrentStep((prev) =>
+            prev < stepsConfig.length - 2 ? prev + 1 : prev
+          );
+        }
+      })
+      .catch(() => {
+        // Ignore network errors and continue polling
+      });
+  }, 1000*40); // poll every 5s
 
-    return () => clearInterval(poll);
-  }, [taskId]);
+  return () => clearInterval(poll);
+}, [taskId]);
+
 
   return (
     <div className="relative min-h-screen flex flex-col justify-center items-center bg-gray-50 p-4">
       {/* Loader */}
 {loading && (
-  <div className="absolute inset-0 flex flex-col justify-center items-center bg-white z-50 p-8">
+<div className="absolute inset-0 flex flex-col justify-start items-center bg-white z-50 p-16 pt-24">
+
+      {/* Rotating top message */}
+    <p className="text-center text-gray-600 mb-4 font-medium text-lg">
+      {currentTopMessage}
+    </p>
+
+
+
     {/* Wide Progress bar */}
     <div className="w-96 h-4 bg-gray-300 rounded-full overflow-hidden mb-8">
       <div
