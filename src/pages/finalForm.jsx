@@ -5,7 +5,7 @@ import { Loader2, CheckCircle, Circle } from "lucide-react"; // spinner + icons
 
 const topMessages = [
   "⚠️ Please don’t refresh the page, this is a one-time process.",
-  "⏳ Site setup may take a few minutes.",
+  "⏳ Site setup may take a few minutes!",
   "🔒 Do not close the tab until the setup completes.",
   "💡 Sit back and relax, your site is being prepared."
 ];
