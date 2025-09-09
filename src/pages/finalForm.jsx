@@ -465,20 +465,27 @@ useEffect(() => {
         <div className="text-red-600 text-center text-lg">{message}</div>
       )}
 
-      {/* Success message */}
-      {!loading && success && (
-        <div className="flex flex-col items-center space-y-4">
-          <div className="text-green-600 text-center text-lg">{message}</div>
-          {siteName && (
-            <button
-              onClick={() => window.open(`http://${siteName}`, "_blank")}
-              className="px-6 py-2 bg-[#1D76BC] text-white rounded-lg shadow hover:bg-sky-800 transition"
-            >
-              Visit Your Site
-            </button>
-          )}
-        </div>
-      )}
+{/* Success message */}
+{!loading && success && (
+  <div className="flex flex-col items-center gap-3">
+    {/* Minimal message with orange accent */}
+    <div className="text-blue-700 text-center text-sm px-3 py-2 border-l-4 border-orange-500">
+      {message}
+    </div>
+
+    {siteName && (
+      <button
+        onClick={() => window.open(`http://${siteName}`, "_blank")}
+        className="px-5 py-2 rounded-md bg-blue-600 text-white
+                   hover:bg-blue-700
+                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+      >
+        Visit Your Site
+      </button>
+    )}
+  </div>
+)}
+
     </div>
   );
 };
