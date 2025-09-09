@@ -238,7 +238,7 @@ if (res.data.status === "completed") {
       .catch(() => {
         // Ignore network errors and continue polling
       });
-  }, 1000*50); // poll every 5s
+  }, 1000*10); // poll every 5s
 
   return () => clearInterval(poll);
 }, [taskId]);
@@ -256,11 +256,16 @@ if (res.data.status === "completed") {
     </p>
 
 
+{/* <div class="mb-1 text-base font-medium dark:text-white">Small</div>
+<div class="w-full bg-gray-200 rounded-full h-1.5 mb-4 dark:bg-gray-700">
+  <div class="bg-blue-600 h-1.5 rounded-full dark:bg-blue-500" style="width: 45%"></div>
+</div> */}
+
 
     {/* Wide Progress bar */}
-    <div className="w-96 h-4 bg-gray-300 rounded-full overflow-hidden mb-8">
+    <div className="w-120 bg-gray-200 rounded-full h-1.5 mb-4 dark:bg-blue-700">
       <div
-        className="h-4 bg-blue-500 transition-all duration-500"
+        className="bg-blue-600 h-1.5 rounded-full dark:bg-orange-500"
         style={{ width: `${progress}%` }}
       ></div>
     </div>
