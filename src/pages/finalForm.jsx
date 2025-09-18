@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Loader2, CheckCircle, Circle } from "lucide-react"; // spinner + icons
+import { io } from "socket.io-client";
+import { useRef } from "react";
 
 const topMessages = [
   "⚠️ Please don’t refresh the page, this is a one-time process.",
@@ -101,6 +103,8 @@ const FinalForm = () => {
 
   const id = localStorage.getItem("componyId");
 
+  const socketRef = useRef(null);
+
   useEffect(() => {
     if (!loading) return;
 
@@ -127,6 +131,51 @@ const FinalForm = () => {
     return () => clearInterval(subInterval);
   }, [currentStep, loading]);
 
+
+    // connect once
+useEffect(() => {
+  if (!id) return;
+  const socket = io(import.meta.env.VITE_API_URL, {
+    transports: ['websocket'],
+    query: { companyId: id },
+  });
+  socketRef.current = socket;
+
+  socket.on('connect', () => {
+    setMessage("⚡ Live updates connected…");
+  });
+
+  socket.on('site:progress', ({ status, progress: p, subtext, siteName }) => {
+    const stepIndex = stepsConfig.findIndex((s) => s.id === status);
+    if (stepIndex !== -1) {
+      setCurrentStep(stepIndex);
+      setProgress((prev) => (p > prev ? p : prev));
+      setCurrentSubtext(subtext || "");
+    }
+    if (status === "done") {
+      setSuccess(true);
+      setSiteName(siteName);
+      setMessage("Site created successfully!");
+      setLoading(false);
+    }
+    if (status === "error") {
+      setError(true);
+      setMessage("❌ Site creation failed. Check logs.");
+      setLoading(false);
+    }
+  });
+
+  socket.on('site:log', ({ line }) => {
+    // sanitize or shorten if needed
+    setCurrentSubtext(line);
+  });
+
+  return () => {
+    socket.disconnect();
+  };
+}, [id]);
+
+
   useEffect(() => {
     if (!id) {
       setError(true);
@@ -134,16 +183,16 @@ const FinalForm = () => {
       setLoading(false);
       return;
     }
-
+    // starts the backend task; socket will receive progress
     axios
       .post(`${import.meta.env.VITE_API_URL}/createnewsite/${id}`)
       .then((res) => {
         if (res.status === 200) {
-          setTaskId(res.data.taskId);
+          setTaskId(res.data.taskId || "live");
           setMessage("⚡ Site building started...");
           setCurrentStep(0);
         } else {
-          throw new Error("No taskId returned from backend");
+          throw new Error("Failed to start site creation");
         }
       })
       .catch((err) => {
@@ -152,6 +201,9 @@ const FinalForm = () => {
         setLoading(false);
       });
   }, [id]);
+
+
+
 
   useEffect(() => {
     if (!id) return;
