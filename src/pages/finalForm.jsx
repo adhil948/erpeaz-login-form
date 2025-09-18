@@ -6,7 +6,7 @@ const topMessages = [
   "⚠️ Please don’t refresh the page, this is a one-time process.",
   "⏳ Site setup may take a few minutes!",
   "🔒 Do not close the tab until the setup completes.",
-  "💡 Sit back and relax, your site is being prepared."
+  "💡 Sit back and relax, your site is being prepared.",
 ];
 
 const stepsConfig = [
@@ -86,7 +86,6 @@ const stepsConfig = [
   },
 ];
 
-
 const FinalForm = () => {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -106,7 +105,8 @@ const FinalForm = () => {
     if (!loading) return;
 
     const interval = setInterval(() => {
-      const random = topMessages[Math.floor(Math.random() * topMessages.length)];
+      const random =
+        topMessages[Math.floor(Math.random() * topMessages.length)];
       setCurrentTopMessage(random);
     }, 8000);
 
@@ -167,7 +167,9 @@ const FinalForm = () => {
           if (stepIndex !== -1) {
             setCurrentStep(stepIndex);
             setProgress((prev) => {
-              const next = Math.round(((stepIndex + 1) / stepsConfig.length) * 100);
+              const next = Math.round(
+                ((stepIndex + 1) / stepsConfig.length) * 100
+              );
               return next > prev ? next : prev;
             });
 
@@ -242,64 +244,66 @@ const FinalForm = () => {
               }
             `}</style>
           </div>
-
           {/* Step List */}
           <ul className="w-full max-w-xl bg-white border border-gray-200 rounded-lg p-4">
-           {stepsConfig.map((step, idx) => {
-  const done = idx < currentStep;
-  const active = idx === currentStep;
+            {stepsConfig.map((step, idx) => {
+              const done = idx < currentStep;
+              const active = idx === currentStep;
 
-  const label =
-    step.labels
-      ? (active ? step.labels.active : done ? step.labels.done : step.labels.idle)
-      : step.label; // fallback if any step lacks labels
+              const label = step.labels
+                ? active
+                  ? step.labels.active
+                  : done
+                  ? step.labels.done
+                  : step.labels.idle
+                : step.label; // fallback if any step lacks labels
 
-  return (
-    <li key={step.id} className="flex items-start py-3">
-      <span
-        className={[
-          "mt-1 w-3 h-3 rounded-full shrink-0",
-          done
-            ? "bg-orange-500"
-            : active
-            ? "bg-blue-600 ring-4 ring-blue-100"
-            : "bg-gray-300",
-        ].join(" ")}
-      />
-      <div className="ml-3">
-        <div
-          className={[
-            "text-sm font-medium leading-5",
-            active
-              ? "text-blue-700"
-              : done
-              ? "text-gray-800"
-              : "text-gray-500",
-          ].join(" ")}
-          aria-current={active ? "step" : undefined}
-        >
-          {label}
-        </div>
-        <div className="mt-1 h-5 overflow-hidden">
-          <div
-            className={[
-              "text-xs text-gray-500 flex items-center gap-1 truncate transition-opacity duration-200",
-              active && currentSubtext ? "opacity-100" : "opacity-0",
-            ].join(" ")}
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            <Loader2 className="w-3.5 h-3.5 shrink-0 animate-spin text-blue-600" />
-            <span className="truncate">{currentSubtext || ""}</span>
-          </div>
-        </div>
-      </div>
-    </li>
-  );
-})}
-
+              return (
+                <li key={step.id} className="flex items-start py-3">
+                  <span
+                    className={[
+                      "mt-1 w-3 h-3 rounded-full shrink-0",
+                      done
+                        ? "bg-orange-500"
+                        : active
+                        ? "bg-blue-600 ring-4 ring-blue-100"
+                        : "bg-gray-300",
+                    ].join(" ")}
+                  />
+                  <div className="ml-3">
+                    <div
+                      className={[
+                        "text-sm font-medium leading-5",
+                        active
+                          ? "text-blue-700"
+                          : done
+                          ? "text-gray-800"
+                          : "text-gray-500",
+                      ].join(" ")}
+                      aria-current={active ? "step" : undefined}
+                    >
+                      {label}
+                    </div>
+                    <div className="mt-1 h-5 overflow-hidden">
+                      <div
+                        className={[
+                          "text-xs text-gray-500 flex items-center gap-1 truncate transition-opacity duration-200",
+                          active && currentSubtext
+                            ? "opacity-100"
+                            : "opacity-0",
+                        ].join(" ")}
+                        aria-live="polite"
+                        aria-atomic="true"
+                      >
+                        <Loader2 className="w-3.5 h-3.5 shrink-0 animate-spin text-blue-600" />
+                        <span className="truncate">{currentSubtext || ""}</span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
-
           <br /> <br />
           <p className="text-center text-gray-600 mb-4 font-medium text-lg">
             {currentTopMessage}
@@ -311,65 +315,76 @@ const FinalForm = () => {
         <div className="text-red-600 text-center text-lg">{message}</div>
       )}
 
-{!loading && success && (
-  <div className="w-full max-w-xl">
-    <div className="rounded-xl overflow-hidden shadow-md bg-white">
-      {/* Solid orange accent bar */}
-      <div className="bg-orange-500 h-1.5" />
+      {!loading && success && (
+        <div className="w-full max-w-xl">
+          <div className="rounded-xl overflow-hidden shadow-md bg-white">
+            {/* Solid orange accent bar */}
+            <div className="bg-orange-500 h-1.5" />
 
-      <div className="p-6 flex flex-col items-center text-center">
-        {/* Solid, soft badge */}
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full
-                        bg-blue-50 ring-2 ring-white shadow">
-          <CheckCircle className="w-7 h-7 text-blue-600" />
-        </div>
+            <div className="p-6 flex flex-col items-center text-center">
+              {/* Solid, soft badge */}
+              <div
+                className="inline-flex items-center justify-center w-12 h-12 rounded-full
+                        bg-blue-50 ring-2 ring-white shadow"
+              >
+                <CheckCircle className="w-7 h-7 text-blue-600" />
+              </div>
 
-        {/* Title */}
-        <h2 className="mt-4 text-xl font-semibold text-blue-900">{message}</h2>
+              {/* Title */}
+              <h2 className="mt-4 text-xl font-semibold text-blue-900">
+                {message}
+              </h2>
 
-        {/* URL hint */}
-        {siteName && (
-          <p className="mt-1 text-sm text-gray-600">
-            Site: <span className="font-medium text-orange-600">{siteName}</span>
-          </p>
-        )}
+              {/* URL hint */}
+              {siteName && (
+                <p className="mt-1 text-sm text-gray-600">
+                  Site:{" "}
+                  <span className="font-medium text-orange-600">
+                    {siteName}
+                  </span>
+                </p>
+              )}
 
-        {/* Actions */}
-        <div className="mt-5 flex gap-3">
-          {siteName && (
-            <button
-              onClick={() => window.open(`http://${siteName}`, "_blank")}
-              className="px-5 py-2.5 rounded-md text-white
+              {/* Actions */}
+              <div className="mt-5 flex gap-3">
+                {siteName && (
+                  <button
+                    onClick={() => window.open(`http://${siteName}`, "_blank")}
+                    className="px-5 py-2.5 rounded-md text-white
                          bg-blue-600 hover:bg-blue-700
                          focus-visible:outline-none focus-visible:ring-2
                          focus-visible:ring-offset-2 focus-visible:ring-blue-600"
-            >
-              Visit your site
-            </button>
-          )}
-          {siteName && (
-            <button
-              onClick={() => navigator.clipboard.writeText(`http://${siteName}`)}
-              className="px-5 py-2.5 rounded-md border border-orange-300
+                  >
+                    Visit your site
+                  </button>
+                )}
+                {siteName && (
+                  <button
+                    onClick={() =>
+                      navigator.clipboard.writeText(`http://${siteName}`)
+                    }
+                    className="px-5 py-2.5 rounded-md border border-orange-300
                          text-blue-700 hover:bg-orange-50
                          focus-visible:outline-none focus-visible:ring-2
                          focus-visible:ring-offset-2 focus-visible:ring-blue-600"
-            >
-              Copy URL
-            </button>
-          )}
+                  >
+                    Copy URL
+                  </button>
+                )}
+              </div>
+
+              {/* Status line */}
+              <div
+                role="status"
+                aria-live="polite"
+                className="mt-4 text-xs text-gray-500"
+              >
+                A new ERPNext site is ready.
+              </div>
+            </div>
+          </div>
         </div>
-
-        {/* Status line */}
-        <div role="status" aria-live="polite" className="mt-4 text-xs text-gray-500">
-          A new ERPNext site is ready.
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
-
+      )}
     </div>
   );
 };
